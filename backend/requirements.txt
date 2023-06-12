@@ -1,0 +1,3 @@
+# FastAPI
+fastapi
+uvicorn[standard]
