@@ -1,3 +1,10 @@
 # FastAPI
 fastapi
 uvicorn[standard]
+
+# LLM
+langchain
+openai
+
+# DB
+sqlalchemy

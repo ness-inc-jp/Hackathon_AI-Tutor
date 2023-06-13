@@ -6,10 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "yarn lint --fix",
+    "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.7.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^10.12.16",
     "next": "13.4.5",
+    "next-auth": "^4.22.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
@@ -19,6 +26,11 @@
     "@types/react-dom": "18.2.4",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.5",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "prettier": "^2.8.8",
     "typescript": "5.1.3"
   }
 }
