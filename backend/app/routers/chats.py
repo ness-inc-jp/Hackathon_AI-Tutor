@@ -14,6 +14,8 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from langchain.output_parsers import StructuredOutputParser, ResponseSchema
+from app.services.parse_chat import parse_chat
 
 
 chat = ChatOpenAI(temperature=0)
@@ -31,25 +33,7 @@ class ChatPayload(BaseModel):
 
 @router.post("/")
 async def create_chat(payload: ChatPayload):
-    messages = [
-        SystemMessage(
-            content="""
-        #命令書:
-あなたは、アメリカ人のプロの英語講師です。
-以下の制約条件をもとに、 USERと会話してください。
-
-#制約条件:
-・USERの名前は「」です。
-・USERは英語初級者である。
-・USERが最初に投稿した3行程度の英語日記の内容をテーマに会話をする。
-・文法間違い、より適切な表現があれば訂正し、その理由を述べる。
-・可能であれば、文章の最後は質問で終わらせて会話を引き出してください。
-・1つの会話はなるべく100文字以上300文字以内で終わらせてください。
-        """
-        ),
-        HumanMessage(content=payload.message),
-    ]
-    response = chat(messages=messages)
+    response = parse_chat(payload.message)
     return response
 
 

@@ -1,8 +1,4 @@
-import { AuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
-
-const authOptions: AuthOptions = {
-  providers: [],
-};
+import { authOptions } from "@/src/server/auth";
 
 export default NextAuth(authOptions);
