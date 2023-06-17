@@ -2,17 +2,24 @@ import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
 import { NextApiRequest, NextApiResponse } from "next";
 import { chatOpenAI } from "@/src/utils/langchain";
 
-const systemMessage = new SystemChatMessage(`
-  あなたは英語教師です。
-  Userから入力される英文に対して、正しい英語に直して下さい。
-`);
+const systemMessagePrompt = `
+#命令書:
+あなたは、アメリカ人のプロの英語講師です。
+以下の"AI Tutor"と"User"のやり取りを見て、"User"の英語が不適切だと考えた場合はその理由を日本語で説明して下さい。
+また、正しいと思う英文を英語で出力して下さい。
+`;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { message } = req.body;
+  const { aiMessage, userMessage } = req.body;
 
-  const humanMessage = new HumanChatMessage(message);
+  const humanMessagePrompt = `AI Tutor: ${aiMessage}\nUser: ${userMessage}\n`;
 
-  const response = await chatOpenAI.call([systemMessage, humanMessage]);
+  const response = await chatOpenAI.call([
+    new SystemChatMessage(systemMessagePrompt),
+    new HumanChatMessage(humanMessagePrompt),
+  ]);
 
-  res.status(200).json(response);
+  const responseMessage = response.text;
+
+  res.status(200).send(responseMessage);
 }

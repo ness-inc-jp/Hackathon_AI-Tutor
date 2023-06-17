@@ -1,15 +1,12 @@
-import { Box, Button, Container, Flex, Heading, Icon, Input, Stack, Text } from "@chakra-ui/react";
-import {
-  PaperAirplaneIcon,
-  MicrophoneIcon,
-  SpeakerWaveIcon,
-  LanguageIcon,
-} from "@heroicons/react/24/outline";
-import axios from "axios";
+import { Button, Container, Flex, Heading, Icon, Input, Stack } from "@chakra-ui/react";
+import { PaperAirplaneIcon, MicrophoneIcon } from "@heroicons/react/24/outline";
 import { NextPage } from "next";
 import { useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import { ChatBubble } from "../components/ChatBubble";
 import { useAudio } from "../utils/useAudio";
+import { useChat } from "../utils/useChat";
+import { useCheckMessage } from "../utils/useCheckMessage";
 import { useTextToSpeech } from "../utils/useTextToSpeech";
 
 interface BaseMessage {
@@ -17,11 +14,11 @@ interface BaseMessage {
   type: "user" | "ai";
 }
 
-interface UserMessage extends BaseMessage {
+export interface UserMessage extends BaseMessage {
   type: "user";
 }
 
-interface AIMessage extends BaseMessage {
+export interface AIMessage extends BaseMessage {
   type: "ai";
   japaneseContent: string;
   audioUrl: string;
@@ -30,7 +27,8 @@ interface AIMessage extends BaseMessage {
 const TalkPage: NextPage = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState<Array<UserMessage | AIMessage>>([]);
-  const [showJapanese, setShowJapanese] = useState(false);
+  const { conversation } = useChat();
+  const { checkMessage } = useCheckMessage();
   const { getAudioUrl } = useTextToSpeech();
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
   const { playAudio } = useAudio();
@@ -64,33 +62,15 @@ const TalkPage: NextPage = () => {
     });
 
     // GPTの返答を取得
-    const response = await axios.post("/api/gpt/chat", {
-      message: inputMessage,
-    });
+    const { enContent, jaContent } = await conversation(inputMessage);
 
-    if (response.status !== 200) {
-      console.log(response);
-      alert("エラーが発生しました");
-      return;
-    }
-
-    console.log(response);
-
-    if (response.data === "") {
-      alert("エラーが発生しました");
-      return;
-    }
-
-    const englishContent = response.data.en;
-    const japaneseContent = response.data.ja;
-
-    const audioContent = await getAudioUrl(englishContent);
+    const audioContent = await getAudioUrl(enContent);
     if (!audioContent) return;
 
     const aiMessage: AIMessage = {
       type: "ai",
-      content: englishContent,
-      japaneseContent: japaneseContent,
+      content: enContent,
+      japaneseContent: jaContent,
       audioUrl: audioContent,
     };
 
@@ -103,7 +83,11 @@ const TalkPage: NextPage = () => {
     playAudio(audioUrl);
   };
 
-  console.log(messages);
+  const onClickCheckMessage = async (messagesIndex: number) => {
+    console.log(messagesIndex);
+    console.log(messages[messagesIndex]);
+    console.log(messages[messagesIndex - 1]);
+  };
 
   return (
     <>
@@ -112,35 +96,12 @@ const TalkPage: NextPage = () => {
 
         <Stack gap="4" pb="76px">
           {messages.map((message, i) => (
-            <Flex justifyContent={message.type === "user" ? "flex-end" : "flex-start"} key={i}>
-              <Box
-                bgColor={message.type === "user" ? "blue.100" : "green.100"}
-                borderRadius="16"
-                px="3"
-                py="2"
-              >
-                <Text>{message.content}</Text>
-                {message.type === "ai" && (
-                  <>
-                    <Flex gap="2" pt="2">
-                      <Box onClick={() => onClickSpeaker(message.audioUrl)}>
-                        <Icon as={SpeakerWaveIcon} />
-                      </Box>
-                      <Box
-                        onClick={() =>
-                          setShowJapanese((prev) => {
-                            return !prev;
-                          })
-                        }
-                      >
-                        <Icon as={LanguageIcon} />
-                      </Box>
-                    </Flex>
-                    {showJapanese && <Text color="blackAlpha.700">{message.japaneseContent}</Text>}
-                  </>
-                )}
-              </Box>
-            </Flex>
+            <ChatBubble
+              key={i}
+              message={message}
+              onClickCheckMessage={() => onClickCheckMessage(i)}
+              onClickSpeaker={onClickSpeaker}
+            />
           ))}
         </Stack>
       </Container>
