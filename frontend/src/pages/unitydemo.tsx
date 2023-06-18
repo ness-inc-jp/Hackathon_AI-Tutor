@@ -53,6 +53,9 @@ const Home: NextPage = () => {
     //inputでSceneの名前を代入
     const [sceneName, setSceneName] = useState<string>("")
     const [currentScene, setCurrentScene] = useState<string>("");
+    //男女二人が話すとき
+    const [isManPlaying, setIsManPlaying] = useState<boolean>(false)
+    const [isWomanPlaying, setIsWomanPlaying] = useState<boolean>(false)
 
     useEffect(() => {
         if (isPlaying) {
@@ -77,11 +80,9 @@ const Home: NextPage = () => {
     }
 
     const startTalk = () => {
-        // unityContext.send("MTH_DEF", "PlaySound", 1);
         unityContext.send("MTH_DEF", "MouthAction", 1);
     }
     const stopTalk = () => {
-        // unityContext.send("MTH_DEF", "PlaySound", 0)
         unityContext.send("MTH_DEF", "MouthAction", 0);
     }
 
@@ -89,20 +90,17 @@ const Home: NextPage = () => {
         unityContext.send("ChangeScene", "HandleChangeScene", scene)
         setCurrentScene(scene);
     }
-    const [isManPlaying, setIsManPlaying] = useState<boolean>(false)
-    const [isWomanPlaying, setIsWomanPlaying] = useState<boolean>(false)
+
+
     //男性の声(two)の場合
     const startManTalk = () => {
-        // unityContext.send("MTH_DEF", "PlaySound", 1);
         unityContext.send("MAN_MTH_DEF", "MouthAction", 1);
     }
     const stopManTalk = () => {
-        // unityContext.send("MTH_DEF", "PlaySound", 0)
         unityContext.send("MAN_MTH_DEF", "MouthAction", 0);
     }
     //女性の声(TWO)の場合
     const startWomanTalk = () => {
-        // unityContext.send("MTH_DEF", "PlaySound", 1);
         unityContext.send("WOMAN_MTH_DEF", "MouthAction", 1);
     }
     const stopWomanTalk = () => {
