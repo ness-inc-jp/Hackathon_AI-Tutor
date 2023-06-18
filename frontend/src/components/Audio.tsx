@@ -8,7 +8,7 @@ type Voice = {
     file: string
 }
 
-const Audio = (props: { isPlaying: boolean, setIsPlaying: Function, voices: Voice[], trackPlaying: number, setTrackPlaying: Function }) => {
+const Audio = (props: { currentScene: string, isPlaying: boolean, setIsPlaying: Function, voices: Voice[], trackPlaying: number, setTrackPlaying: Function }) => {
 
     const audioRef = useRef<HTMLAudioElement>(null);
 

@@ -20,19 +20,6 @@ type Voice = {
     file: string
 }
 
-//Viuce Sample
-
-
-// export const getStaticProps = async () => {
-//   const allVoices: Voice[] = VOICE;
-//   return {
-//     props: {
-//       voices: allVoices
-//     },
-//     revalidata: 3600
-//   }
-// }
-
 const Home: NextPage = () => {
     const voices: Voice[] = [
         {
@@ -48,42 +35,42 @@ const Home: NextPage = () => {
             file: "Voice/03.wav"
         }
     ]
+
+    const manVoice: Voice[] = [
+        {
+            id: 0,
+            file: "/Voice/04man.mp3"
+        },
+        {
+            id: 0,
+            file: "/Voice/05man.mp3"
+        }
+    ]
     // Unity AnimationCommand Input
     const [inputKey, setInputKey] = useState("");
-    //Unity Current Animation 
-    const [animation, setAnimation] = useState("");
-    // Whether Animation act
-    const [isSituation, setIsSituation] = useState(0);
-    //Whether Sound act 
-    const [isSoundStart, setIsSoundStart] = useState(0);
-
     const [trackPlaying, setTrackPlaying] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
+    //inputでSceneの名前を代入
     const [sceneName, setSceneName] = useState<string>("")
+    const [currentScene, setCurrentScene] = useState<string>("");
 
     useEffect(() => {
-        unityContext.on("AnimationCallback", function (animation, isSituation) {
-            setAnimation(animation);
-            setIsSituation(isSituation);
-        });
-    }, []);
-
-    useEffect(() => {
-        console.log(isPlaying);
         if (isPlaying) {
             startTalk()
-        }
-        else {
+        } else {
             stopTalk()
         }
+        if (isManPlaying) {
+            startManTalk()
+        } else {
+            stopManTalk()
+        }
+        if (isWomanPlaying) {
+            startWomanTalk()
+        } else {
+            stopWomanTalk()
+        }
     })
-
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputKey(e.target.value);
-    }
 
     const ChangeAnimation = (key: string) => {
         unityContext.send("unitychan_hw", "AniSituation", key);
@@ -100,6 +87,27 @@ const Home: NextPage = () => {
 
     const handleChangeScene = (scene: string) => {
         unityContext.send("ChangeScene", "HandleChangeScene", scene)
+        setCurrentScene(scene);
+    }
+    const [isManPlaying, setIsManPlaying] = useState<boolean>(false)
+    const [isWomanPlaying, setIsWomanPlaying] = useState<boolean>(false)
+    //男性の声(two)の場合
+    const startManTalk = () => {
+        // unityContext.send("MTH_DEF", "PlaySound", 1);
+        unityContext.send("MAN_MTH_DEF", "MouthAction", 1);
+    }
+    const stopManTalk = () => {
+        // unityContext.send("MTH_DEF", "PlaySound", 0)
+        unityContext.send("MAN_MTH_DEF", "MouthAction", 0);
+    }
+    //女性の声(TWO)の場合
+    const startWomanTalk = () => {
+        // unityContext.send("MTH_DEF", "PlaySound", 1);
+        unityContext.send("WOMAN_MTH_DEF", "MouthAction", 1);
+    }
+    const stopWomanTalk = () => {
+        // unityContext.send("MTH_DEF", "PlaySound", 0)
+        unityContext.send("WOMAN_MTH_DEF", "MouthAction", 0);
     }
 
     return (
@@ -118,14 +126,27 @@ const Home: NextPage = () => {
             </Flex>
             <br />
             <h3>Command</h3>
-            <p>Success : 了解</p>
-            <p>Shy：悩む</p>
-            <p>Amasing：大喜びからのピース</p>
-            <p>Worry：ダメージを受ける</p>
-            <p>ByeBye：大きく手を振ってバイバイ</p>
+            <p>success : 了解</p>
+            <p>shy：悩む</p>
+            <p>amasing：大喜びからのピース</p>
+            <p>worry：ダメージを受ける</p>
+            <p>byebye：大きく手を振ってバイバイ</p>
             <p>Reset：defaultの動きに戻す</p>
             <br />
-            <Audio isPlaying={isPlaying} setIsPlaying={setIsPlaying} voices={voices} trackPlaying={trackPlaying} setTrackPlaying={setTrackPlaying} />
+            {currentScene == "two" ? (
+                <>
+                    <Flex>
+                        <p>男性の声：</p>
+                        <Audio currentScene={currentScene} isPlaying={isManPlaying} setIsPlaying={setIsManPlaying} voices={manVoice} trackPlaying={trackPlaying} setTrackPlaying={setTrackPlaying} />
+                    </Flex>
+                    <Flex>
+                        <p>女性の声：</p>
+                        <Audio currentScene={currentScene} isPlaying={isWomanPlaying} setIsPlaying={setIsWomanPlaying} voices={voices} trackPlaying={trackPlaying} setTrackPlaying={setTrackPlaying} />
+                    </Flex>
+                </>
+            ) : (
+                <Audio currentScene={currentScene} isPlaying={isPlaying} setIsPlaying={setIsPlaying} voices={voices} trackPlaying={trackPlaying} setTrackPlaying={setTrackPlaying} />
+            )}
 
             <Flex gap="4" justifyContent="flex-end">
                 <Input h="44px" onChange={(e) => setSceneName(e.target.value)} />
@@ -134,6 +155,7 @@ const Home: NextPage = () => {
             <h3>Change Scene</h3>
             <p>HWUnitychan：デフォルトのUnityChan</p>
             <p>Yuji：男性(音ハメはまだ)</p>
+            <p>two：二人で登場</p>
         </Container>
     )
 }
