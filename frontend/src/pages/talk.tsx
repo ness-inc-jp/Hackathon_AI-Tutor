@@ -1,122 +1,120 @@
-import { Button, Container, Flex, Heading, Icon, Input, Stack } from "@chakra-ui/react";
-import { PaperAirplaneIcon, MicrophoneIcon } from "@heroicons/react/24/outline";
+import { Box, Container, Flex } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { useState } from "react";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import { ChatBubble } from "../components/ChatBubble";
-import { useAudio } from "../utils/useAudio";
-import { useChat } from "../utils/useChat";
-import { useCheckMessage } from "../utils/useCheckMessage";
-import { useTextToSpeech } from "../utils/useTextToSpeech";
+import { useEffect, useRef, useState } from "react";
+import Unity from "react-unity-webgl";
+import { ChatBubble } from "../features/chat/components/ChatBubble";
+import { ChatInput } from "../features/chat/components/ChatInput";
+import { AIChatMessage, UserChatMessage } from "../features/chat/types/ChatMessage";
+import { useUnity } from "../utils/useUnity";
+import bg from "@/public/bg-school.jpg";
+import { useChat } from "@/src/features/chat/utils/useChat";
 
-interface BaseMessage {
-  content: string;
-  type: "user" | "ai";
-}
-
-export interface UserMessage extends BaseMessage {
-  type: "user";
-}
-
-export interface AIMessage extends BaseMessage {
-  type: "ai";
-  japaneseContent: string;
-  audioUrl: string;
-}
+const firstAiMessage: AIChatMessage = {
+  role: "ai",
+  content: "Hello!, How are you?",
+  japaneseContent: "こんにちは、元気ですか？",
+  audioUrl: "",
+};
 
 const TalkPage: NextPage = () => {
+  const endOfScrollRef = useRef<HTMLDivElement>(null);
+  const { unityContext } = useUnity();
+  const { streamingCoversation } = useChat();
   const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState<Array<UserMessage | AIMessage>>([]);
-  const { conversation } = useChat();
-  const { checkMessage } = useCheckMessage();
-  const { getAudioUrl } = useTextToSpeech();
-  const { transcript, listening, resetTranscript } = useSpeechRecognition();
-  const { playAudio } = useAudio();
+  const [tempAiMessage, setTempAiMessage] = useState<AIChatMessage | null>(null);
+  const [messages, setMessages] = useState<Array<AIChatMessage | UserChatMessage>>([
+    firstAiMessage,
+  ]);
 
-  const onClickMic = async () => {
-    if (!listening) {
-      resetTranscript();
-      SpeechRecognition.startListening({ language: "en-US", continuous: true });
-    } else {
-      SpeechRecognition.stopListening();
-      await chatConversation(transcript);
+  useEffect(() => {
+    if (endOfScrollRef.current) {
+      endOfScrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  };
+  }, [messages]);
 
   const onClickSend = async () => {
-    if (!inputMessage) return;
-    chatConversation(inputMessage);
-  };
-
-  const chatConversation = async (inputMessage: string) => {
-    if (!inputMessage) return;
-
-    // UserMessageの作成&格納
-    const userMessage: UserMessage = {
-      type: "user",
+    const userChatMessage: UserChatMessage = {
+      role: "user",
       content: inputMessage,
     };
 
     setMessages((prev) => {
-      return [...prev, userMessage];
+      return [...prev, userChatMessage];
     });
 
-    // GPTの返答を取得
-    const { enContent, jaContent } = await conversation(inputMessage);
+    await streamingCoversation(inputMessage, {
+      handleLLMNewToken(token) {
+        console.log("handleLLMNewToken", token);
 
-    const audioContent = await getAudioUrl(enContent);
-    if (!audioContent) return;
+        setTempAiMessage((prev) => {
+          if (!prev) {
+            return {
+              role: "ai",
+              content: token,
+              japaneseContent: "",
+              audioUrl: "",
+            };
+          }
 
-    const aiMessage: AIMessage = {
-      type: "ai",
-      content: enContent,
-      japaneseContent: jaContent,
-      audioUrl: audioContent,
-    };
+          return {
+            ...prev,
+            content: prev.content + token,
+          };
+        });
+      },
+      handleLLMEnd(text) {
+        const aiChatMessage: AIChatMessage = {
+          role: "ai",
+          content: text,
+          japaneseContent: text,
+          audioUrl: "",
+        };
 
-    setMessages((prev) => {
-      return [...prev, aiMessage];
+        setTempAiMessage(null);
+
+        setMessages((prev) => {
+          return [...prev, aiChatMessage];
+        });
+      },
     });
-  };
-
-  const onClickSpeaker = async (audioUrl: string) => {
-    playAudio(audioUrl);
-  };
-
-  const onClickCheckMessage = async (messagesIndex: number) => {
-    console.log(messagesIndex);
-    console.log(messages[messagesIndex]);
-    console.log(messages[messagesIndex - 1]);
   };
 
   return (
-    <>
-      <Container maxW="container.md">
-        <Heading>Talk With AI</Heading>
+    <Box h="100vh" position="absolute" top="0" width="100vw">
+      <Unity
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url(${bg.src})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        unityContext={unityContext}
+      />
 
-        <Stack gap="4" pb="76px">
+      <Container bottom="0" insetX={0} maxW="container.md" mx="auto" position="fixed" py="4">
+        <Flex flexDirection="column" maxH="300px" overflow="scroll" pb="4">
           {messages.map((message, i) => (
-            <ChatBubble
-              key={i}
-              message={message}
-              onClickCheckMessage={() => onClickCheckMessage(i)}
-              onClickSpeaker={onClickSpeaker}
-            />
+            <ChatBubble key={i} message={message} />
           ))}
-        </Stack>
-      </Container>
-      <Container bgColor="white" bottom="0" h="76px" maxW="container.md" position="fixed" py="4">
-        <Flex gap="2">
-          <Input h="44px" onChange={(e) => setInputMessage(e.target.value)} />
-          <Button h="44px" onClick={onClickSend} w="44px">
-            <Icon as={PaperAirplaneIcon} />
-          </Button>
-          <Button h="44px" onClick={onClickSend} w="44px">
-            <Icon as={MicrophoneIcon} />
-          </Button>
+          {tempAiMessage && <ChatBubble message={tempAiMessage} />}
+          <div ref={endOfScrollRef} />
         </Flex>
+        <ChatInput
+          inputProps={{
+            onChange: (e) => setInputMessage(e.target.value),
+          }}
+          micButtonProps={{
+            onClick: onClickSend,
+          }}
+          sendButtonProps={{
+            isDisabled: inputMessage === "",
+            onClick: onClickSend,
+          }}
+        />
       </Container>
-    </>
+    </Box>
   );
 };
 

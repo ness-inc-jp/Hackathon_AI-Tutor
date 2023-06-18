@@ -6,7 +6,7 @@ export const chatRouter = router({
     .input(
       z.object({
         message: z.string(),
-      }),
+      })
     )
     .mutation((opts) => {
       return {

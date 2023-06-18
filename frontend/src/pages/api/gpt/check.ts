@@ -9,7 +9,10 @@ const systemMessagePrompt = `
 また、正しいと思う英文を英語で出力して下さい。
 `;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { aiMessage, userMessage } = req.body;
 
   const humanMessagePrompt = `AI Tutor: ${aiMessage}\nUser: ${userMessage}\n`;

@@ -1,8 +1,4 @@
-import os
 from app.core.config import settings
-
-os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 from langchain.chat_models import ChatOpenAI
@@ -17,7 +13,7 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.output_parsers import StructuredOutputParser, ResponseSchema
 from app.services.parse_chat import parse_chat
 
-chat = ChatOpenAI(temperature=0)
+chat = ChatOpenAI(temperature=0, openai_api_key=settings.OPENAI_API_KEY)
 
 router = APIRouter(
     prefix="/chats",

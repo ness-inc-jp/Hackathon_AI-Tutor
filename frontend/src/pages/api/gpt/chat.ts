@@ -20,7 +20,10 @@ const systemMessage2 = new SystemChatMessage(`
 入力される英語の文章を日本語に翻訳して下さい。
 `);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { message } = req.body;
 
   const humanMessage1 = new HumanChatMessage(message);

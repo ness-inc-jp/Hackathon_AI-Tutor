@@ -7,7 +7,9 @@ export default function Home() {
   const [messages, setMessages] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleNewMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewMessageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setNewMessage(event.target.value);
   };
 
@@ -54,7 +56,12 @@ export default function Home() {
           type="text"
           value={newMessage}
         />
-        <Button colorScheme="teal" mt={4} onClick={handleSendMessage} variant="outline">
+        <Button
+          colorScheme="teal"
+          mt={4}
+          onClick={handleSendMessage}
+          variant="outline"
+        >
           Send
         </Button>
       </Box>
