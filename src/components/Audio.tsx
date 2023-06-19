@@ -14,6 +14,7 @@ type Voice = {
 };
 
 const Audio = (props: {
+  currentScene: string;
   isPlaying: boolean;
   setIsPlaying: Function;
   voices: Voice[];

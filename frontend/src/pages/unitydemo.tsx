@@ -1,7 +1,7 @@
-import { Button, Container, Flex, Input } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Icon, Input, Stack, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
 import Unity, { UnityContext } from "react-unity-webgl";
+import { useEffect, useState } from "react";
 import Audio from "../components/Audio";
 //unity インスタンス生成
 const unityContext = new UnityContext({
@@ -110,12 +110,12 @@ const Home: NextPage = () => {
   return (
     <Container maxW="container.md">
       <Unity
+        unityContext={unityContext}
         style={{
           height: "100%",
           width: "100%",
           backgroundColor: "rgba(0,0,0,0)",
         }}
-        unityContext={unityContext}
       />
       <br />
       <Flex gap="4" justifyContent="flex-end">
@@ -139,9 +139,9 @@ const Home: NextPage = () => {
               currentScene={currentScene}
               isPlaying={isManPlaying}
               setIsPlaying={setIsManPlaying}
-              setTrackPlaying={setTrackPlaying}
-              trackPlaying={trackPlaying}
               voices={manVoice}
+              trackPlaying={trackPlaying}
+              setTrackPlaying={setTrackPlaying}
             />
           </Flex>
           <Flex>
@@ -150,9 +150,9 @@ const Home: NextPage = () => {
               currentScene={currentScene}
               isPlaying={isWomanPlaying}
               setIsPlaying={setIsWomanPlaying}
-              setTrackPlaying={setTrackPlaying}
-              trackPlaying={trackPlaying}
               voices={voices}
+              trackPlaying={trackPlaying}
+              setTrackPlaying={setTrackPlaying}
             />
           </Flex>
         </>
@@ -161,9 +161,9 @@ const Home: NextPage = () => {
           currentScene={currentScene}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
-          setTrackPlaying={setTrackPlaying}
-          trackPlaying={trackPlaying}
           voices={voices}
+          trackPlaying={trackPlaying}
+          setTrackPlaying={setTrackPlaying}
         />
       )}
 
