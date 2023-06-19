@@ -8,7 +8,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/modal";
-import { useSession } from "next-auth/react";
 import { FC } from "react";
 import { useAuth } from "../hooks/useAuth";
 
@@ -20,8 +19,8 @@ interface Props {
 export const LoginModal: FC<Props> = (props) => {
   const { isOpen, onClose } = props;
   const { loginWithGoogle } = useAuth();
-  const { data } = useSession();
-  console.log(data);
+  // const { data } = useSession();
+  // console.log(data);
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>

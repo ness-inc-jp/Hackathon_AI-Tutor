@@ -4,6 +4,8 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import Unity from "react-unity-webgl";
+import bg from "@/public/bg-school.jpg";
+import { useChat } from "@/src/features/chat/utils/useChat";
 import { AiChatBubble } from "../features/chat/components/AIChatBubbole";
 import { ChatInput } from "../features/chat/components/ChatInput";
 import { UserChatBubble } from "../features/chat/components/UserChatBubble";
@@ -11,8 +13,6 @@ import { AIChatMessage, UserChatMessage } from "../features/chat/types/ChatMessa
 import { useTextToSpeech } from "../features/chat/utils/useTextToSpeech";
 import { useAudio } from "../utils/useAudio";
 import { useUnity } from "../utils/useUnity";
-import bg from "@/public/bg-school.jpg";
-import { useChat } from "@/src/features/chat/utils/useChat";
 
 const firstAiMessage: AIChatMessage = {
   role: "ai",

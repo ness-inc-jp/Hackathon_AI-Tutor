@@ -2,14 +2,31 @@ import { Box, Button, Center, Container, Flex, Text, Textarea } from "@chakra-ui
 import axios from "axios";
 import { NextPage } from "next";
 import { useState } from "react";
-import { useCheckDiary } from "../features/home/hooks/useCheckDiary";
+import { useCheckDiary } from "../features/dashboard/hooks/useCheckDiary";
+import { useTranslateDiary } from "../features/dashboard/hooks/useTranslateDiary";
 import { useCurrentData } from "../utils/useCurrentDate";
 
-const HomePage: NextPage = () => {
+const DashboardPage: NextPage = () => {
   const currentData = useCurrentData();
+  const { translateDiary } = useTranslateDiary();
   const { checkDiary } = useCheckDiary();
-  const [diary, inputDiary] = useState("");
-  const [checkedDiary, setCheckedDiary] = useState("");
+  const [diary, inputDiary] = useState<string>("");
+  const [translatedDiary, setTranslatedDiary] = useState<string>("");
+  const [checkedDiary, setCheckedDiary] = useState<string>("");
+
+  const onClickTranslateDiary = async () => {
+    setTranslatedDiary("");
+
+    await translateDiary(diary, {
+      handleLLMNewToken(token) {
+        setTranslatedDiary((prev) => {
+          return prev + token;
+        });
+      },
+    });
+  };
+
+  console.log(translatedDiary);
 
   const onClickCheckDiary = async () => {
     setCheckedDiary("");
@@ -51,11 +68,20 @@ const HomePage: NextPage = () => {
       />
 
       <Flex gap="4" justifyContent="flex-end" py="2">
+        <Button isDisabled={!diary} onClick={onClickTranslateDiary}>
+          ✏️ 英語に直す
+        </Button>
         <Button isDisabled={!diary} onClick={onClickCheckDiary}>
           添削する
         </Button>
         <Button onClick={onClickStartTalk}>AIとTalkする</Button>
       </Flex>
+
+      {translatedDiary && (
+        <Box bgColor="blue.50" borderRadius="4" minH="100px" p="4">
+          <Text>{translatedDiary}</Text>
+        </Box>
+      )}
 
       {checkedDiary && (
         <Box bgColor="blue.50" borderRadius="4" minH="100px" p="4">
@@ -66,4 +92,4 @@ const HomePage: NextPage = () => {
   );
 };
 
-export default HomePage;
+export default DashboardPage;
