@@ -1,26 +1,26 @@
-import { Box, Button, Container, Flex, Icon, Portal, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Icon, Text, useDisclosure } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import Unity from "react-unity-webgl";
-import bg from "@/public/bg-school.jpg";
-import { useChat } from "@/src/features/chat/hooks/useChat";
-import { AiChatBubble } from "../features/chat/components/AIChatBubbole";
-import { ChatInput } from "../features/chat/components/ChatInput";
-import { DiaryModal } from "../features/chat/components/DiaryModal";
-import { UserChatBubble } from "../features/chat/components/UserChatBubble";
-
-const TalkPage: NextPage = () => {
+import bg from "@/public/bg-night.jpg";
+import { useCheckLove } from "@/src/features/chat/hooks/useCheckLove";
+import { useLoveChat } from "@/src/features/chat/hooks/useLoveChat";
+import { AiChatBubble } from "../../features/chat/components/AIChatBubbole";
+import { ChatInput } from "../../features/chat/components/ChatInput";
+import { UserChatBubble } from "../../features/chat/components/UserChatBubble";
+const LoveTalkPage: NextPage = () => {
   const router = useRouter();
   const endOfScrollRef = useRef<HTMLDivElement>(null);
 
   const [inputMessage, setInputMessage] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { conversation, messages, tempAiMessage, diary, playAudio, unityContext } = useChat();
-  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
-    useSpeechRecognition();
+  // const { conversation, messages, tempAiMessage, diary, playAudio, unityContext } = useChat();
+  const { conversation, messages, tempAiMessage, playAudio, unityContext } = useLoveChat();
+  const { lovePoint, checkLove } = useCheckLove();
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
     if (endOfScrollRef.current) {
@@ -32,6 +32,7 @@ const TalkPage: NextPage = () => {
     if (inputMessage === "") return;
     setInputMessage("");
     conversation(inputMessage, false);
+    checkLove(inputMessage);
   };
 
   const onClickMic = async () => {
@@ -52,23 +53,30 @@ const TalkPage: NextPage = () => {
   return (
     <Box h="100vh" position="absolute" top="0" width="100vw">
       <Container maxW="container.md">
-        <Flex alignItems="center" gap="4" position="fixed" top="4">
-          <Button bgColor="whiteAlpha.500" borderRadius="full" onClick={() => router.back()}>
-            <Icon as={ChevronLeftIcon} />
-          </Button>
-          <Text color="blackAlpha.700" fontSize="3xl" fontWeight="semibold">
-            {diary ? "Diary Talk Mode" : "Free Talk Mode"}
-          </Text>
-          {diary && (
-            <>
-              <Button backgroundColor="blackAlpha.400" borderRadius="4" onClick={onOpen}>
-                📖
-              </Button>
-              <Portal>
-                <DiaryModal diary={diary} isOpen={isOpen} onClose={onClose} />
-              </Portal>
-            </>
-          )}
+        <Flex alignItems="center" justifyContent="space-between" position="fixed" top="4">
+          <Flex alignItems="center" gap="4">
+            <Button bgColor="whiteAlpha.500" borderRadius="full" onClick={() => router.back()}>
+              <Icon as={ChevronLeftIcon} />
+            </Button>
+            <Text color="whiteAlpha.500" fontSize="3xl" fontWeight="semibold">
+              Love Talk Mode
+            </Text>
+          </Flex>
+
+          <Flex alignItems="center" color="pink.400" pl="20">
+            <svg
+              fill="currentColor"
+              style={{ width: "44px", height: "44px" }}
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+            </svg>
+
+            <Text fontSize="4xl" fontWeight="bold">
+              {lovePoint}
+            </Text>
+          </Flex>
         </Flex>
       </Container>
 
@@ -131,4 +139,4 @@ const TalkPage: NextPage = () => {
   );
 };
 
-export default TalkPage;
+export default LoveTalkPage;

@@ -1,15 +1,10 @@
-import { Button, Container, Flex, Text } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { Button, Container, Flex, Portal, Text, useDisclosure } from "@chakra-ui/react";
 // import { useSession } from "next-auth/react";
 import { FC } from "react";
+import { FreeTalkModeModal } from "../features/chat/components/FreeTalkModeModal";
 
 export const Header: FC = () => {
-  const router = useRouter();
-
-  const onClickFreeTalk = () => {
-    localStorage.removeItem("diary");
-    router.push("/talk");
-  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Container maxW="container.xl">
@@ -22,10 +17,13 @@ export const Header: FC = () => {
           bgColor="messenger.400"
           borderRadius="full"
           color="white"
-          onClick={onClickFreeTalk}
+          onClick={onOpen}
         >
           AI Tutorとフリートーク 🎙
         </Button>
+        <Portal>
+          <FreeTalkModeModal isOpen={isOpen} onClose={onClose} />
+        </Portal>
       </Flex>
     </Container>
   );
