@@ -8,7 +8,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 // SeechConfig
 const speechConfig = SpeechConfig.fromSubscription(
   process.env.AZURE_SPEECH_SERVICE_KEY as string,
-  process.env.AZURE_SPEECH_SERVICE_REGION as string,
+  process.env.AZURE_SPEECH_SERVICE_REGION as string
 );
 // 音声の種類を指定
 speechConfig.speechSynthesisVoiceName = "en-US-AmberNeural";
@@ -16,7 +16,10 @@ speechConfig.speechSynthesisVoiceName = "en-US-AmberNeural";
 // AudioConfig
 const audioConfig = AudioConfig.fromDefaultSpeakerOutput();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { text } = req.body;
 
   if (!text) {
@@ -37,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         (error) => {
           synthesizer.close();
           reject(error);
-        },
+        }
       );
     });
 

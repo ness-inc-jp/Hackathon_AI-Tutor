@@ -14,7 +14,6 @@ export const useAudio = (props: Props) => {
       const audio = new Audio();
 
       if (onAudioEnded) {
-        console.log("hogehoge");
         audio.onended = onAudioEnded;
       }
 

@@ -1,5 +1,5 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { AIChatMessage, HumanChatMessage, LLMResult, SystemChatMessage } from "langchain/schema";
+import { HumanChatMessage, LLMResult, SystemChatMessage } from "langchain/schema";
 
 const chatOpenAI = new ChatOpenAI({
   streaming: true,
@@ -13,7 +13,7 @@ const systemChatMessage = new SystemChatMessage(`
 
 # 制約条件:
 ・userは英語初心者です。
-・回答は必ず日本語で行なって下さい。
+・回答は絶対日本語で行なって下さい。
 ・以下のaiとuserの会話を見て、まずuserの英文を褒めて下さい。
 ・その後、userの英文が適切じゃなかった場合のみ、その理由を日本語で説明して下さい。
 `);
@@ -27,8 +27,6 @@ export const useCheckMessage = () => {
       handleLLMEnd?: (text: string) => Promise<void>;
     },
   ) => {
-    console.log({ aiMessage, userMessage });
-    const aiChatMessage = new AIChatMessage(aiMessage);
     const humanChatMessage = new HumanChatMessage(`
     AI Tutor: ${aiMessage}
     User: ${userMessage}

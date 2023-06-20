@@ -13,19 +13,16 @@ export const AiChatBubble: FC<Props> = (props) => {
   const { message, onClickSpeaker } = props;
   const { translate } = useTranslate();
   const [japaneseContent, setJapaneseContent] = useState<string>("");
-  const [isShowJapanese, setIsShowJapanese] = useState<boolean>(false);
 
   const onClickTranslate = async () => {
     if (japaneseContent !== "") return;
 
     await translate(message.content, {
       handleLLMNewToken(token) {
-        console.log(token);
         setJapaneseContent((prev) => {
           return prev + token;
         });
       },
-      async handleLLMEnd(text) {},
     });
   };
 
@@ -50,10 +47,14 @@ export const AiChatBubble: FC<Props> = (props) => {
 
         <Flex gap="2" pl="2">
           {message.audioUrl && (
-            <Box cursor="pointer" onClick={() => onClickSpeaker(message.audioUrl)}>
+            <Box
+              cursor="pointer"
+              onClick={() => onClickSpeaker(message.audioUrl ? message.audioUrl : "")}
+            >
               <Icon as={SpeakerWaveIcon} color="whiteAlpha.700" />
             </Box>
           )}
+
           <Box cursor="pointer" onClick={onClickTranslate}>
             <Icon as={LanguageIcon} color="whiteAlpha.700" />
           </Box>

@@ -14,16 +14,16 @@ const systemChatMessage = new SystemChatMessage(`
 
 #制約条件:
 ・USERは英語初級者である。
+・絶対に与えられた英文以上の翻訳はしないで下さい。
 ・返信は日本語でして下さい。 
-
 `);
 
 export const useTranslate = () => {
   const translate = async (
     inputEnglish: string,
     options: {
-      handleLLMNewToken: (token: string) => void;
-      handleLLMEnd: (text: string) => Promise<void>;
+      handleLLMNewToken?: (token: string) => void;
+      handleLLMEnd?: (text: string) => Promise<void>;
     },
   ) => {
     const humanChatMessage = new HumanChatMessage(inputEnglish);
@@ -31,10 +31,12 @@ export const useTranslate = () => {
     await chatOpenAI.call([systemChatMessage, humanChatMessage], undefined, [
       {
         handleLLMNewToken(token: string) {
+          if (!options.handleLLMNewToken) return;
           options.handleLLMNewToken(token);
         },
         async handleLLMEnd(output: LLMResult) {
           if (!output.generations[0][0].text) return;
+          if (!options.handleLLMEnd) return;
           await options.handleLLMEnd(output.generations[0][0].text);
         },
       },

@@ -1,4 +1,12 @@
-import { Button, Container, Flex, Heading, Input, Stack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Input,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -46,7 +54,11 @@ const SettingPage: NextPage = () => {
         </Stack>
 
         <Flex justifyContent="flex-end" py="8">
-          <Button colorScheme="messenger" isDisabled={!name} onClick={onClickSave}>
+          <Button
+            colorScheme="messenger"
+            isDisabled={!name}
+            onClick={onClickSave}
+          >
             保存
           </Button>
         </Flex>

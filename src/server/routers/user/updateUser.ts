@@ -9,7 +9,7 @@ export const updateUser = procedure
   .input(
     z.object({
       name: z.string(),
-    }),
+    })
   )
   .mutation(async ({ input, ctx }) => {
     const session = await getServerSession(ctx.req, ctx.res, authOptions);

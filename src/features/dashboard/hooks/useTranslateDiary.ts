@@ -1,4 +1,8 @@
-import { HumanChatMessage, LLMResult, SystemChatMessage } from "langchain/schema";
+import {
+  HumanChatMessage,
+  LLMResult,
+  SystemChatMessage,
+} from "langchain/schema";
 import { chatOpenAI } from "@/src/utils/langchain";
 
 const systemChatMessage = new SystemChatMessage(`
@@ -13,7 +17,7 @@ export const useTranslateDiary = () => {
     options: {
       handleLLMNewToken?: (token: string) => void;
       handleLLMEnd?: (text: string) => Promise<void>;
-    },
+    }
   ) => {
     const humanChatMessage = new HumanChatMessage(diary);
 

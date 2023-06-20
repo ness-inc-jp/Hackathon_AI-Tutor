@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Icon } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Icon, Portal, Text, useDisclosure } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -8,39 +8,16 @@ import bg from "@/public/bg-school.jpg";
 import { useChat } from "@/src/features/chat/utils/useChat";
 import { AiChatBubble } from "../features/chat/components/AIChatBubbole";
 import { ChatInput } from "../features/chat/components/ChatInput";
+import { DiaryModal } from "../features/chat/components/DiaryModal";
 import { UserChatBubble } from "../features/chat/components/UserChatBubble";
-import { AIChatMessage, UserChatMessage } from "../features/chat/types/ChatMessage";
-import { useTextToSpeech } from "../features/chat/utils/useTextToSpeech";
-import { useAudio } from "../utils/useAudio";
-import { useUnity } from "../utils/useUnity";
-
-const firstAiMessage: AIChatMessage = {
-  role: "ai",
-  content: "Hello!, How are you?",
-  audioUrl: "",
-};
 
 const TalkPage: NextPage = () => {
   const router = useRouter();
   const endOfScrollRef = useRef<HTMLDivElement>(null);
-  const { unityContext, talkStart, talkStop } = useUnity();
-  const { streamingCoversation } = useChat();
-  const { getAudioUrl } = useTextToSpeech();
-  const { playAudio } = useAudio({
-    onAudioStart: () => {
-      console.log("audio start");
-      talkStart();
-    },
-    onAudioEnded: () => {
-      console.log("audio ended");
-      talkStop();
-    },
-  });
+
   const [inputMessage, setInputMessage] = useState("");
-  const [tempAiMessage, setTempAiMessage] = useState<AIChatMessage | null>(null);
-  const [messages, setMessages] = useState<Array<AIChatMessage | UserChatMessage>>([
-    firstAiMessage,
-  ]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { conversation, messages, tempAiMessage, diary, playAudio, unityContext } = useChat();
 
   useEffect(() => {
     if (endOfScrollRef.current) {
@@ -49,83 +26,40 @@ const TalkPage: NextPage = () => {
   }, [messages, tempAiMessage]);
 
   const onClickSend = async () => {
-    const userChatMessage: UserChatMessage = {
-      role: "user",
-      content: inputMessage,
-    };
+    if (inputMessage === "") return;
 
-    setMessages((prev) => {
-      return [...prev, userChatMessage];
-    });
-
-    await streamingCoversation(inputMessage, {
-      handleLLMNewToken(token) {
-        console.log("handleLLMNewToken", token);
-
-        setTempAiMessage((prev) => {
-          if (!prev) {
-            return {
-              role: "ai",
-              content: token,
-              japaneseContent: "",
-              audioUrl: "",
-            };
-          }
-
-          return {
-            ...prev,
-            content: prev.content + token,
-          };
-        });
-      },
-      async handleLLMEnd(text) {
-        const audioUrl = await getAudioUrl(text);
-
-        if (audioUrl) {
-          playAudio(audioUrl);
-        }
-
-        setTempAiMessage(null);
-
-        const aiChatMessage: AIChatMessage = {
-          role: "ai",
-          content: text,
-          audioUrl: audioUrl ? audioUrl : "",
-        };
-
-        setMessages((prev) => {
-          return [...prev, aiChatMessage];
-        });
-      },
-    });
+    conversation(inputMessage, false);
   };
 
   const onClickSpeaker = (audioUrl: string) => {
     playAudio(audioUrl);
   };
 
-  const onClickCheckMessage = (messageIndex: number) => {
-    const userChatMessage = messages[messageIndex] as UserChatMessage;
-    const aiChatMessage = messages[messageIndex - 1] as AIChatMessage;
-  };
-
   return (
     <Box h="100vh" position="absolute" top="0" width="100vw">
       <Container maxW="container.md">
-        <Button
-          bgColor="whiteAlpha.500"
-          borderRadius="full"
-          onClick={() => router.push("/home")}
-          position="fixed"
-          top="4"
-        >
-          <Icon as={ChevronLeftIcon} />
-        </Button>
+        <Flex alignItems="center" gap="4" position="fixed" top="4">
+          <Button bgColor="whiteAlpha.500" borderRadius="full" onClick={() => router.back()}>
+            <Icon as={ChevronLeftIcon} />
+          </Button>
+          <Text color="blackAlpha.700" fontSize="3xl" fontWeight="semibold">
+            {diary ? "Diary Talk Mode" : "Free Talk Mode"}
+          </Text>
+          {diary && (
+            <>
+              <Button backgroundColor="blackAlpha.400" borderRadius="4" onClick={onOpen}>
+                📖
+              </Button>
+              <Portal>
+                <DiaryModal diary={diary} isOpen={isOpen} onClose={onClose} />
+              </Portal>
+            </>
+          )}
+        </Flex>
       </Container>
 
       <Unity
         style={{
-          // position: "absolute",
           width: "100%",
           height: "100%",
           backgroundImage: `url(${bg.src})`,
@@ -150,7 +84,7 @@ const TalkPage: NextPage = () => {
                 <UserChatBubble
                   key={i}
                   message={message}
-                  prevAiMessageContent={messages[i - 1].content}
+                  prevAiMessageContent={messages[i - 1] ? messages[i - 1].content : ""}
                 />
               )}
             </>
@@ -168,9 +102,11 @@ const TalkPage: NextPage = () => {
           inputProps={{
             onChange: (e) => setInputMessage(e.target.value),
           }}
-          micButtonProps={{
-            onClick: onClickSend,
-          }}
+          micButtonProps={
+            {
+              // onClick: onClickSend,
+            }
+          }
           sendButtonProps={{
             isDisabled: inputMessage === "",
             onClick: onClickSend,

@@ -42,12 +42,16 @@ export const UserChatBubble: FC<Props> = (props) => {
         >
           <Text>{message.content}</Text>
         </Box>
-        <Box cursor="pointer" onClick={onClickCheckContent} pr="2">
-          <Icon
-            as={LightBulbIcon}
-            color={isShowCheckContent ? "whiteAlpha.400" : "whiteAlpha.800"}
-          />
-        </Box>
+
+        {prevAiMessageContent && (
+          <Box cursor="pointer" onClick={onClickCheckContent} pr="2">
+            <Icon
+              as={LightBulbIcon}
+              color={isShowCheckContent ? "whiteAlpha.400" : "whiteAlpha.800"}
+            />
+          </Box>
+        )}
+
         {checkContent && (
           <Box
             bgColor="gray.50"

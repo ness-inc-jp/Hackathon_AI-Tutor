@@ -89,7 +89,10 @@ const Audio = (props: {
   return (
     <div>
       <Flex>
-        <BsFillSkipBackwardFill onClick={() => handlePreviousOrNext("previous")} size={24} />
+        <BsFillSkipBackwardFill
+          onClick={() => handlePreviousOrNext("previous")}
+          size={24}
+        />
         <audio
           controls
           onTimeUpdate={handleTimeUpdate}
@@ -103,7 +106,10 @@ const Audio = (props: {
         ) : (
           <BsFillPlayFill onClick={() => handlePlay()} size={32} />
         )}
-        <BsFillSkipForwardFill onClick={() => handlePreviousOrNext("next")} size={24} />
+        <BsFillSkipForwardFill
+          onClick={() => handlePreviousOrNext("next")}
+          size={24}
+        />
       </Flex>
     </div>
   );
