@@ -15,7 +15,7 @@ export const AiChatBubble: FC<Props> = (props) => {
   const [japaneseContent, setJapaneseContent] = useState<string>("");
 
   const onClickTranslate = async () => {
-    if (japaneseContent !== "") return;
+    setJapaneseContent("");
 
     await translate(message.content, {
       handleLLMNewToken(token) {

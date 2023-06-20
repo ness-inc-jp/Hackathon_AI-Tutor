@@ -1,26 +1,31 @@
-import { Container, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import { Button, Container, Flex, Text } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 // import { useSession } from "next-auth/react";
-import { useSession } from "next-auth/react";
 import { FC } from "react";
 
 export const Header: FC = () => {
-  const { data: session, status } = useSession();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(session);
+  const router = useRouter();
+
+  const onClickFreeTalk = () => {
+    localStorage.removeItem("diary");
+    router.push("/talk");
+  };
+
   return (
-    <Container maxW="full">
+    <Container maxW="container.xl">
       <Flex alignItems="center" justifyContent="space-between" py="3">
-        <Text fontWeight="bold">AI Tutor</Text>
-        {/* {session && session.user?.id ? (
-          <Button onClick={onOpen}>{session.user.name}</Button>
-        ) : (
-          <Button isLoading={status === "loading"} onClick={onOpen}>
-            Login
-          </Button>
-        )}
-        <Portal>
-          <LoginModal isOpen={isOpen} onClose={onClose} />
-        </Portal> */}
+        <Text fontSize="xl" fontWeight="bold">
+          AI Tutor
+        </Text>
+        <Button
+          _hover={{ bgColor: "messenger.500" }}
+          bgColor="messenger.400"
+          borderRadius="full"
+          color="white"
+          onClick={onClickFreeTalk}
+        >
+          AI Tutorとフリートーク 🎙
+        </Button>
       </Flex>
     </Container>
   );

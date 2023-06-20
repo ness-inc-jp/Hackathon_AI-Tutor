@@ -16,8 +16,7 @@ export const UserChatBubble: FC<Props> = (props) => {
   const [isShowCheckContent, setIsShowCheckContent] = useState<boolean>(false);
 
   const onClickCheckContent = async () => {
-    if (checkContent !== "" || isShowCheckContent) return;
-
+    setCheckContent("");
     setIsShowCheckContent(true);
 
     await checkMessage(prevAiMessageContent, message.content, {

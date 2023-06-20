@@ -30,6 +30,7 @@ const TalkPage: NextPage = () => {
 
   const onClickSend = async () => {
     if (inputMessage === "") return;
+    setInputMessage("");
     conversation(inputMessage, false);
   };
 
@@ -113,6 +114,7 @@ const TalkPage: NextPage = () => {
 
         <ChatInput
           inputProps={{
+            value: inputMessage,
             onChange: (e) => setInputMessage(e.target.value),
           }}
           isListening={listening}
