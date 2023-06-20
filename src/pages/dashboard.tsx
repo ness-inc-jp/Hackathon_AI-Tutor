@@ -1,35 +1,14 @@
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Skeleton,
-  Stack,
-  Text,
-  Textarea,
-} from "@chakra-ui/react";
+import { Button, Center, Container, Flex, Skeleton, Stack, Text, Textarea } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { EnglishModeLayout } from "../features/dashboard/components/EnglishModeLayout";
 import { JapaneseModeLayout } from "../features/dashboard/components/JapaneseModeLayout";
-import { useCheckDiary } from "../features/dashboard/hooks/useCheckDiary";
 import { useCurrentData } from "../features/dashboard/hooks/useCurrentDate";
-import { useGetExtractWords } from "../features/dashboard/hooks/useGetExtractWords";
-import { useTranslateDiary } from "../features/dashboard/hooks/useTranslateDiary";
 
 const DashboardPage: NextPage = () => {
-  const router = useRouter();
   const { currentDate } = useCurrentData();
-  const { translateDiary } = useTranslateDiary();
-  const { getExtractWords } = useGetExtractWords();
-  const { checkDiary } = useCheckDiary();
   const [diary, inputDiary] = useState<string>("");
-  const [translatedDiary, setTranslatedDiary] = useState<string>("");
-  const [extractWords, setExtractWords] = useState<string>("");
-  const [checkedDiary, setCheckedDiary] = useState<string>("");
-  const [isEnglishMode, setIsEnglishMode] = useState<boolean>(true);
+  const [isEnglishMode, setIsEnglishMode] = useState<boolean>(false);
 
   const onClickChangeLanguageMode = () => {
     setIsEnglishMode((prev) => {
@@ -83,12 +62,6 @@ const DashboardPage: NextPage = () => {
       />
 
       {isEnglishMode ? <EnglishModeLayout diary={diary} /> : <JapaneseModeLayout diary={diary} />}
-
-      {checkedDiary && (
-        <Box bgColor="blue.50" borderRadius="4" minH="100px" p="4">
-          <Text>{checkedDiary}</Text>
-        </Box>
-      )}
     </Container>
   );
 };

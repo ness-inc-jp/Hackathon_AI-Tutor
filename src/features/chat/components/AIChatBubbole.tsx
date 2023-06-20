@@ -1,8 +1,8 @@
 import { Box, Flex, Icon, Stack, Text } from "@chakra-ui/react";
 import { LanguageIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { FC, useState } from "react";
+import { useTranslate } from "../hooks/useTranslate";
 import { AIChatMessage } from "../types/ChatMessage";
-import { useTranslate } from "../utils/useTranslate";
 
 interface Props {
   message: AIChatMessage;
@@ -47,17 +47,38 @@ export const AiChatBubble: FC<Props> = (props) => {
 
         <Flex gap="2" pl="2">
           {message.audioUrl && (
-            <Box
+            <Flex
+              alignItems="center"
+              bgColor="pink.400"
+              borderRadius="full"
               cursor="pointer"
+              gap="1"
               onClick={() => onClickSpeaker(message.audioUrl ? message.audioUrl : "")}
+              opacity="0.75"
+              px="2"
             >
-              <Icon as={SpeakerWaveIcon} color="whiteAlpha.700" />
-            </Box>
+              <Icon as={SpeakerWaveIcon} color="white" />
+              <Text color="white" fontSize="xs">
+                音声を聞く
+              </Text>
+            </Flex>
           )}
 
-          <Box cursor="pointer" onClick={onClickTranslate}>
+          <Flex
+            alignItems="center"
+            bgColor="pink.400"
+            borderRadius="full"
+            cursor="pointer"
+            gap="1"
+            onClick={onClickTranslate}
+            opacity="0.75"
+            px="2"
+          >
             <Icon as={LanguageIcon} color="whiteAlpha.700" />
-          </Box>
+            <Text color="white" fontSize="xs">
+              翻訳する
+            </Text>
+          </Flex>
         </Flex>
       </Stack>
     </Flex>

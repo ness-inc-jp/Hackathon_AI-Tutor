@@ -1,8 +1,8 @@
 import { Flex, Box, Text, Icon } from "@chakra-ui/react";
 import { LightBulbIcon } from "@heroicons/react/24/outline";
 import { FC, useState } from "react";
+import { useCheckMessage } from "../hooks/useCheckMessage";
 import { UserChatMessage } from "../types/ChatMessage";
-import { useCheckMessage } from "../utils/useCheckMessage";
 
 interface Props {
   prevAiMessageContent: string;
@@ -44,12 +44,20 @@ export const UserChatBubble: FC<Props> = (props) => {
         </Box>
 
         {prevAiMessageContent && (
-          <Box cursor="pointer" onClick={onClickCheckContent} pr="2">
-            <Icon
-              as={LightBulbIcon}
-              color={isShowCheckContent ? "whiteAlpha.400" : "whiteAlpha.800"}
-            />
-          </Box>
+          <Flex
+            alignItems="center"
+            bgColor="gray.100"
+            borderRadius="full"
+            color="gray.800"
+            cursor="pointer"
+            gap="1"
+            onClick={onClickCheckContent}
+            opacity={checkContent ? "0.4" : "0.6"}
+            px="2"
+          >
+            <Icon as={LightBulbIcon} />
+            <Text fontSize="xs">添削する</Text>
+          </Flex>
         )}
 
         {checkContent && (

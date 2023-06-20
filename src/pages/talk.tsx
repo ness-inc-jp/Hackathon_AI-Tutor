@@ -3,9 +3,10 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import Unity from "react-unity-webgl";
 import bg from "@/public/bg-school.jpg";
-import { useChat } from "@/src/features/chat/utils/useChat";
+import { useChat } from "@/src/features/chat/hooks/useChat";
 import { AiChatBubble } from "../features/chat/components/AIChatBubbole";
 import { ChatInput } from "../features/chat/components/ChatInput";
 import { DiaryModal } from "../features/chat/components/DiaryModal";
@@ -18,6 +19,8 @@ const TalkPage: NextPage = () => {
   const [inputMessage, setInputMessage] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { conversation, messages, tempAiMessage, diary, playAudio, unityContext } = useChat();
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
 
   useEffect(() => {
     if (endOfScrollRef.current) {
@@ -27,8 +30,18 @@ const TalkPage: NextPage = () => {
 
   const onClickSend = async () => {
     if (inputMessage === "") return;
-
     conversation(inputMessage, false);
+  };
+
+  const onClickMic = async () => {
+    if (!listening) {
+      resetTranscript();
+      SpeechRecognition.startListening({ language: "ja-JP" });
+    } else {
+      console.log(transcript);
+      SpeechRecognition.stopListening();
+      conversation(transcript, false);
+    }
   };
 
   const onClickSpeaker = (audioUrl: string) => {
@@ -70,9 +83,9 @@ const TalkPage: NextPage = () => {
       />
 
       <Container bottom="0" insetX={0} maxW="container.md" mx="auto" position="fixed" py="4">
-        <Flex flexDirection="column" maxH="300px" overflow="scroll" pb="4">
+        <Flex flexDirection="column" gap="1" maxH="300px" overflow="scroll" pb="4">
           {messages.map((message, i) => (
-            <>
+            <Box key={i}>
               {message.role === "ai" && (
                 <AiChatBubble
                   key={i}
@@ -87,7 +100,7 @@ const TalkPage: NextPage = () => {
                   prevAiMessageContent={messages[i - 1] ? messages[i - 1].content : ""}
                 />
               )}
-            </>
+            </Box>
           ))}
           {tempAiMessage && (
             <AiChatBubble
@@ -102,11 +115,10 @@ const TalkPage: NextPage = () => {
           inputProps={{
             onChange: (e) => setInputMessage(e.target.value),
           }}
-          micButtonProps={
-            {
-              // onClick: onClickSend,
-            }
-          }
+          isListening={listening}
+          micButtonProps={{
+            onClick: onClickMic,
+          }}
           sendButtonProps={{
             isDisabled: inputMessage === "",
             onClick: onClickSend,

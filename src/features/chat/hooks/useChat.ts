@@ -37,21 +37,6 @@ const diaryModeSystemPrompt = `
 #diary
 `;
 
-const promptTemplate = (isDiaryMode: boolean) => {
-  if (isDiaryMode) {
-    return ChatPromptTemplate.fromPromptMessages([
-      SystemMessagePromptTemplate.fromTemplate(diaryModeSystemPrompt),
-      new MessagesPlaceholder("history"),
-      HumanMessagePromptTemplate.fromTemplate("{input}"),
-    ]);
-  } else {
-    return ChatPromptTemplate.fromPromptMessages([
-      SystemMessagePromptTemplate.fromTemplate(freeModeSystemPrompt),
-      new MessagesPlaceholder("history"),
-      HumanMessagePromptTemplate.fromTemplate("{input}"),
-    ]);
-  }
-};
 const freeModePromptTempate = ChatPromptTemplate.fromPromptMessages([
   SystemMessagePromptTemplate.fromTemplate(freeModeSystemPrompt),
   new MessagesPlaceholder("history"),

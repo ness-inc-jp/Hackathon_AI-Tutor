@@ -1,25 +1,13 @@
-import {
-  SpeechConfig,
-  AudioConfig,
-  SpeechSynthesizer,
-} from "microsoft-cognitiveservices-speech-sdk";
+import { AudioConfig, SpeechSynthesizer } from "microsoft-cognitiveservices-speech-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
+import { speechConfig } from "@/src/utils/azure";
 
-// SeechConfig
-const speechConfig = SpeechConfig.fromSubscription(
-  process.env.AZURE_SPEECH_SERVICE_KEY as string,
-  process.env.AZURE_SPEECH_SERVICE_REGION as string
-);
-// 音声の種類を指定
 speechConfig.speechSynthesisVoiceName = "en-US-AmberNeural";
 
 // AudioConfig
 const audioConfig = AudioConfig.fromDefaultSpeakerOutput();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { text } = req.body;
 
   if (!text) {
@@ -40,7 +28,7 @@ export default async function handler(
         (error) => {
           synthesizer.close();
           reject(error);
-        }
+        },
       );
     });
 
