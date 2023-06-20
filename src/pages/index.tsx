@@ -20,12 +20,13 @@ const Home: NextPage = () => {
         <Container h="100%" maxW="container.lg">
           <Center h="100%">
             <Flex alignItems="center" gap="16">
-              <Box>
-                <Text color="whiteAlpha.900" fontSize="4xl" fontWeight="semibold">
-                  AIを活用した 英会話学習サービス
+              <Box w="80%">
+                <Text color="whiteAlpha.900" fontSize="6xl" fontWeight="black">
+                  Your Personal <br />
+                  English AI Tutor
                 </Text>
                 <Text color="whiteAlpha.700" fontWeight="semibold">
-                  身近な出来事をテーマにAIと会話しよう
+                  あなたの身近な出来事を日記にして、AIと英語で会話しよう
                 </Text>
                 <Stack gap="4" py="8">
                   <Button borderRadius="full" onClick={onClickDiaryTalk} py="6">
@@ -44,13 +45,27 @@ const Home: NextPage = () => {
                   </Button>
                 </Stack>
               </Box>
-              <Box>
+
+              <Box position="relative" w="50%">
                 <Image
                   alt=""
                   h="606px"
+                  position="relative"
                   src="/iphone-demo.png"
                   sx={{ transform: "rotate(6deg)" }}
                   width="300px"
+                  zIndex="10"
+                />
+                <Image
+                  alt=""
+                  h="606px"
+                  left="20"
+                  position="absolute"
+                  src="/iphone-demo2.png"
+                  sx={{ transform: "rotate(24deg)" }}
+                  top="0"
+                  width="300px"
+                  zIndex="1"
                 />
               </Box>
             </Flex>
